@@ -38,6 +38,7 @@ function Updater({ interactive }: { interactive: boolean }) {
   useFrame((state, dt) => {
     const h = view.host
     if (!h) return
+    view.camera = state.camera
     h.frame(dt)
     const reduce = view.reduceMotion
     uniforms.uTime.value += dt * (reduce ? 0.5 : 1)

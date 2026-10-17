@@ -46,6 +46,9 @@ export class ViewState {
   reduceMotion = false
   reduceFlashing = false
   dustCount = 6000
+  camera: THREE.Camera | null = null
+  /** Recent event types, newest last (inspection and tests). */
+  eventLog: string[] = []
   easedNodes = new Map<number, THREE.Vector3>()
   easedOrgs = new Map<number, THREE.Vector3>()
   u = viewUniforms()
@@ -81,6 +84,8 @@ export function updateView(view: ViewState, dt: number): boolean {
   if (s && fresh) {
     view.snap = s
     view.version = h.version
+    for (const e of s.events) view.eventLog.push(e.type)
+    if (view.eventLog.length > 400) view.eventLog.splice(0, view.eventLog.length - 400)
     view.nodeIndex.clear()
     s.nodeIds.forEach((id, i) => view.nodeIndex.set(id, i))
     view.strandIndex.clear()

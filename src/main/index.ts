@@ -2,12 +2,10 @@ import { app, BrowserWindow, dialog, ipcMain, Menu, net, protocol, session, shel
 import { existsSync, readFileSync, writeFileSync, mkdirSync } from 'node:fs'
 import { dirname, extname, join, normalize, sep } from 'node:path'
 import { pathToFileURL } from 'node:url'
-import { gunzipSync, gzipSync } from 'node:zlib'
-import { z } from 'zod'
 import { DOC_LINKS, type CheckpointMeta, type Exhibit, type UniverseMeta } from '@core/app/bridge'
+import { buildExport, importUniverse } from './importer'
 import type { AtlasEntry } from '@core/app/atlas'
 import type { Settings } from '@core/app/settings'
-import { deserializeWorld } from '@core/sim/serialize'
 import { Store } from './db'
 import { AiMain } from './ai'
 
@@ -94,15 +92,6 @@ function handle<T extends unknown[], R>(channel: string, fn: (...args: T) => R |
   })
 }
 
-const universeFile = z.object({
-  format: z.literal('polaritium-universe'),
-  version: z.number(),
-  meta: z.object({ id: z.string(), name: z.string().max(200), env: z.string(), mode: z.string(), preset: z.string(), seed: z.string() }).passthrough(),
-  state: z.string(),
-  checkpoints: z.array(z.object({ id: z.string(), universeId: z.string(), label: z.string(), tick: z.number(), created: z.number() }).passthrough()).optional(),
-  checkpointStates: z.record(z.string(), z.string()).optional()
-})
-
 function registerIpc(): void {
   handle('settings:get', () => store.getSettings())
   handle('settings:set', (s: Settings) => store.setSettings(s))
@@ -149,39 +138,20 @@ function registerIpc(): void {
     return true
   })
   handle('universes:exportFile', async (id: string) => {
-    const r = store.loadUniverse(id)
-    if (!r) return { ok: false, error: 'That universe could not be found.' }
-    const res = await dialog.showSaveDialog(win!, { title: 'Export universe', defaultPath: join(app.getPath('documents'), `${safeName(r.meta.name)}.polaritium`), filters: [{ name: 'Polaritium universe', extensions: ['polaritium'] }] })
+    const meta = store.listUniverses().find((u) => u.id === id)
+    if (!meta) return { ok: false, error: 'That universe could not be found.' }
+    const res = await dialog.showSaveDialog(win!, { title: 'Export universe', defaultPath: join(app.getPath('documents'), `${safeName(meta.name)}.polaritium`), filters: [{ name: 'Polaritium universe', extensions: ['polaritium'] }] })
     if (res.canceled || !res.filePath) return { ok: false }
-    const cps = store.listCheckpoints(id)
-    const states: Record<string, string> = {}
-    for (const c of cps) states[c.id] = store.loadCheckpoint(c.id) ?? ''
-    // The export carries the world and its checkpoints only: no settings, no key, no ledger.
-    const file = { format: 'polaritium-universe', version: 1, meta: r.meta, state: r.state, checkpoints: cps, checkpointStates: states }
-    writeFileSync(res.filePath, gzipSync(Buffer.from(JSON.stringify(file), 'utf8')))
+    const data = buildExport(store, id)
+    if (!data) return { ok: false, error: 'That universe could not be read.' }
+    writeFileSync(res.filePath, data)
     return { ok: true, value: res.filePath }
   })
   handle('universes:importFile', async () => {
     const res = await dialog.showOpenDialog(win!, { title: 'Import universe', properties: ['openFile'], filters: [{ name: 'Polaritium universe', extensions: ['polaritium'] }] })
     if (res.canceled || !res.filePaths[0]) return { ok: false }
-    try {
-      const raw = readFileSync(res.filePaths[0])
-      if (raw.length > 80 * 1024 * 1024) return { ok: false, error: 'That file is too large to be a Polaritium universe.' }
-      const text = raw[0] === 0x1f && raw[1] === 0x8b ? gunzipSync(raw).toString('utf8') : raw.toString('utf8')
-      const parsed = universeFile.safeParse(JSON.parse(text))
-      if (!parsed.success) return { ok: false, error: 'That file is not a readable Polaritium universe.' }
-      deserializeWorld(parsed.data.state)
-      const id = `${Date.now().toString(36)}${Math.random().toString(36).slice(2, 8)}`
-      const meta = { ...(parsed.data.meta as unknown as UniverseMeta), id, name: `${parsed.data.meta.name} (imported)`, updated: Date.now() }
-      store.saveUniverse(meta, parsed.data.state)
-      for (const c of parsed.data.checkpoints ?? []) {
-        const s = parsed.data.checkpointStates?.[c.id]
-        if (s) store.saveCheckpoint({ ...(c as unknown as CheckpointMeta), id: `${id}-${c.id}`, universeId: id }, s)
-      }
-      return { ok: true, value: meta }
-    } catch (e) {
-      return { ok: false, error: `That file could not be imported: ${(e as Error).message}` }
-    }
+    const r = importUniverse(store, readFileSync(res.filePaths[0]), `${Date.now().toString(36)}${Math.random().toString(36).slice(2, 8)}`)
+    return r.ok ? { ok: true, value: r.meta } : { ok: false, error: r.error }
   })
 
   handle('atlas:list', () => store.listAtlas())

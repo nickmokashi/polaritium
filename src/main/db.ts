@@ -28,24 +28,31 @@ export class Store {
   }
 
   private open(): DatabaseSync {
+    let db: DatabaseSync | null = null
     try {
-      const db = new DatabaseSync(this.path)
+      db = new DatabaseSync(this.path)
       db.exec('PRAGMA journal_mode = WAL; PRAGMA synchronous = FULL; PRAGMA foreign_keys = ON;')
       const ok = db.prepare('PRAGMA quick_check').get() as { quick_check?: string } | undefined
       if (ok && ok.quick_check && ok.quick_check !== 'ok') throw new Error(`Database check failed: ${ok.quick_check}`)
       return db
     } catch (err) {
       // The file is damaged. Keep it for inspection and restore the latest daily copy.
-      if (existsSync(this.path)) renameSync(this.path, `${this.path}.damaged-${Date.now()}`)
+      try {
+        db?.close()
+      } catch {
+        /* already unusable */
+      }
+      const stamp = Date.now()
+      for (const ext of ['', '-wal', '-shm']) if (existsSync(this.path + ext)) renameSync(this.path + ext, `${this.path}${ext}.damaged-${stamp}`)
       const backup = join(dirname(this.path), 'polaritium.backup.db')
       if (existsSync(backup)) {
         copyFileSync(backup, this.path)
         this.recoveredFromBackup = true
       }
-      const db = new DatabaseSync(this.path)
-      db.exec('PRAGMA journal_mode = WAL; PRAGMA synchronous = FULL;')
+      const fresh = new DatabaseSync(this.path)
+      fresh.exec('PRAGMA journal_mode = WAL; PRAGMA synchronous = FULL;')
       void err
-      return db
+      return fresh
     }
   }
 

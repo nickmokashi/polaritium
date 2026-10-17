@@ -7,5 +7,8 @@ import '@fontsource/inter/600.css'
 import './styles.css'
 import { createRoot } from 'react-dom/client'
 import { App } from './App'
+import { installTestHook } from './testhook'
+
+if (new URLSearchParams(location.search).has('test')) installTestHook()
 
 createRoot(document.getElementById('root')!).render(<App />)

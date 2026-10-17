@@ -33,6 +33,7 @@ export async function snapshotThumb(w = 360, h = 220): Promise<string | null> {
 export function Game() {
   const spec = useUI((s) => s.spec)!
   const helpOpen = useUI((s) => s.helpOpen)
+  const universe = useUI((s) => s.universe)
   const [ready, setReady] = useState(false)
   const [menu, setMenu] = useState(false)
   const [dialog, setDialog] = useState<null | 'photo' | 'ai' | 'checkpoint' | 'branch' | 'solved'>(null)
@@ -63,6 +64,10 @@ export function Game() {
 
   // Start the universe.
   useEffect(() => {
+    metaRef.current = spec.universe ?? null
+    solvedRecorded.current = false
+    setReady(false)
+    useUI.getState().set({ universe: spec.universe ?? null })
     const host = new SimHost()
     hostRef.current = host
     resetView()
@@ -231,7 +236,7 @@ export function Game() {
   }
 
   const chamber = spec.chamber ? CHAMBER_BY_ID.get(spec.chamber) : null
-  const title = chamber ? chamber.title : spec.exhibit ? spec.exhibit.name : metaRef.current?.name ?? spec.name
+  const title = chamber ? chamber.title : spec.exhibit ? spec.exhibit.name : universe?.name ?? spec.name
 
   return (
     <div className="screen" data-testid="game">
