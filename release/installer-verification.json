@@ -1,0 +1,125 @@
+{
+  "version": "1.0.0",
+  "installer": "47 Polaritium\\dist\\Polaritium Setup 1.0.0.exe",
+  "installDir": "%TEMP%\\polaritium-install-aQCY3g",
+  "dataDir": "%TEMP%\\polaritium-data-mnJhpY",
+  "started": "2026-10-17T21:13:40.126Z",
+  "steps": [
+    {
+      "name": "the installer runs silently and installs the game",
+      "ok": true,
+      "detail": "exit 0"
+    },
+    {
+      "name": "a Start Menu entry is created",
+      "ok": true
+    },
+    {
+      "name": "the uninstaller is installed",
+      "ok": true
+    },
+    {
+      "name": "licence notices are installed",
+      "ok": true
+    },
+    {
+      "name": "installed (first): the game page loaded and reached its storage",
+      "ok": true
+    },
+    {
+      "name": "installed (first): a new world was generated",
+      "ok": true
+    },
+    {
+      "name": "installed (first): the world evolves without input",
+      "ok": true,
+      "detail": "tick 25 → 124"
+    },
+    {
+      "name": "installed (first): a strand can be drawn between light and dark",
+      "ok": true
+    },
+    {
+      "name": "installed (first): energy flows along it",
+      "ok": true,
+      "detail": "flow 2.249"
+    },
+    {
+      "name": "installed (first): a pulse can be sent",
+      "ok": true
+    },
+    {
+      "name": "installed (first): the universe was saved",
+      "ok": true
+    },
+    {
+      "name": "installed (first): a picture can be rendered",
+      "ok": true
+    },
+    {
+      "name": "installed (first): settings can be saved",
+      "ok": true
+    },
+    {
+      "name": "installed (first): AI starts switched off",
+      "ok": true
+    },
+    {
+      "name": "installed (first): with AI off, a local reading is given and nothing is sent",
+      "ok": true
+    },
+    {
+      "name": "installed (reload): the game page loaded and reached its storage",
+      "ok": true
+    },
+    {
+      "name": "installed (reload): the saved universe survived a restart",
+      "ok": true
+    },
+    {
+      "name": "installed (reload): settings survived a restart",
+      "ok": true
+    },
+    {
+      "name": "installed (reload): it loads",
+      "ok": true
+    },
+    {
+      "name": "installed (reload): the reloaded world is drawn",
+      "ok": true
+    },
+    {
+      "name": "installed (reload): the reloaded world keeps running",
+      "ok": true
+    },
+    {
+      "name": "the game ran from the installation, not the development folder",
+      "ok": true
+    },
+    {
+      "name": "the uninstaller removes the game",
+      "ok": true,
+      "detail": "exit 0"
+    },
+    {
+      "name": "the Start Menu entry is removed",
+      "ok": true
+    },
+    {
+      "name": "saves are kept after uninstalling (as documented)",
+      "ok": true
+    }
+  ],
+  "selftest_first": {
+    "ok": true,
+    "picture": "%TEMP%\\polaritium-data-mnJhpY\\selftest-first.png",
+    "packaged": true
+  },
+  "selftest_reload": {
+    "ok": true,
+    "picture": "%TEMP%\\polaritium-data-mnJhpY\\selftest-reload.png",
+    "packaged": true
+  },
+  "finished": "2026-10-17T21:14:50.721Z",
+  "ok": true
+}

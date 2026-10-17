@@ -30,7 +30,7 @@ export interface CaptureRequest {
   resolve: (dataUrl: string) => void
 }
 
-export const capture = { pending: null as CaptureRequest | null }
+export const capture = { pending: null as CaptureRequest | null, now: null as ((w: number, h: number) => string) | null }
 
 function Updater({ interactive }: { interactive: boolean }) {
   const view = useView()
@@ -119,7 +119,19 @@ function Preview() {
 
 function Capturer({ composer }: { composer: React.MutableRefObject<any> }) {
   const { gl, scene, camera, size } = useThree()
-  useFrame(() => {
+  // Renders a picture on demand, at any size, through the same effects as the screen.
+  useEffect(() => {
+    capture.now = (w: number, h: number) => {
+      let out = ''
+      capture.pending = { width: w, height: h, resolve: (d) => (out = d) }
+      run()
+      return out
+    }
+    return () => {
+      capture.now = null
+    }
+  })
+  const run = () => {
     const req = capture.pending
     if (!req) return
     capture.pending = null
@@ -147,7 +159,8 @@ function Capturer({ composer }: { composer: React.MutableRefObject<any> }) {
       persp.aspect = prevAspect
       persp.updateProjectionMatrix()
     }
-  }, 2)
+  }
+  useFrame(run, 2)
   return null
 }
 

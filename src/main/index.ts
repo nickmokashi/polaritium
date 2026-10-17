@@ -58,7 +58,7 @@ function createWindow(): void {
   win.webContents.on('will-navigate', (e, url) => {
     if (!url.startsWith('app://') && !url.startsWith(process.env.ELECTRON_RENDERER_URL ?? '\u0000')) e.preventDefault()
   })
-  const query = selftest ? `?selftest=${selftest}` : ''
+  const query = selftest ? `?selftest=${selftest}&hidden=1` : hidden ? '?hidden=1' : ''
   if (process.env.ELECTRON_RENDERER_URL && !app.isPackaged) void win.loadURL(`${process.env.ELECTRON_RENDERER_URL}${query}`)
   else void win.loadURL(`app://polaritium/index.html${query}`)
   win.once('ready-to-show', () => {

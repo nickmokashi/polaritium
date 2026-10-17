@@ -24,6 +24,14 @@ import { Tutorial } from './Tutorial'
 // keeps it safe (autosave, checkpoints, branches) and everything it finds (the Atlas).
 
 export async function snapshotThumb(w = 360, h = 220): Promise<string | null> {
+  if (capture.now) {
+    try {
+      const d = capture.now(w, h)
+      if (d) return d
+    } catch {
+      /* fall back to the next frame */
+    }
+  }
   return new Promise((resolve) => {
     capture.pending = { width: w, height: h, resolve: (d) => resolve(d) }
     setTimeout(() => resolve(null), 1500)
@@ -149,6 +157,19 @@ export function Game() {
     }
     useUI.getState().set({ atlas: await bridge.atlas.list() })
   }
+
+  // A hidden window (the self-test and the desktop tests) gets almost no animation frames, so
+  // there the simulation is paced by a timer instead. Normal play never uses this.
+  useEffect(() => {
+    if (!new URLSearchParams(location.search).has('hidden')) return
+    let last = performance.now()
+    const t = setInterval(() => {
+      const now = performance.now()
+      hostRef.current?.frame(Math.min(0.1, (now - last) / 1000))
+      last = now
+    }, 33)
+    return () => clearInterval(t)
+  }, [spec])
 
   // Autosave.
   useEffect(() => {
