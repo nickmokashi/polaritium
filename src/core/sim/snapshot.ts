@@ -8,7 +8,7 @@ import { capacity, radiusOf } from './world'
 // authoritative state. Every visual is driven by these numbers, nothing else.
 
 export const NODE_STRIDE = 16 // x y z radius fill phase kind sat glow freq flags energy mass fx fy fz
-export const STRAND_STRIDE = 14 // a b current tension stress amp twist lock coupling oscFreq carried origin resistance birth
+export const STRAND_STRIDE = 16 // a b current tension stress amp twist lock coupling oscFreq carried origin resistance birth rest bias
 export const ORG_STRIDE = 20 // x y z hx hy hz radius energy family lobes shell phase flash state hue speed siphon held sens diet
 export const SEG_STRIDE = 10 // ax ay az bx by bz thick stress crystal growing
 export const RING_STRIDE = 14 // cx cy cz nx ny nz radius coherence winding energy membrane membraneEnergy membraneRadius members
@@ -40,6 +40,7 @@ export interface RenderSnapshot {
   ringOffsets: Int32Array
   bonds: Int32Array
   veils: Float32Array
+  veilIds: Int32Array
   pulls: Float32Array
   radiance: Float32Array | null
   signal: Float32Array | null
@@ -107,6 +108,8 @@ export function buildSnapshot(w: WorldState, opts: { fields?: boolean; events?: 
     strands[o + 11] = ORIGIN_CODE[s.origin]
     strands[o + 12] = s.resistance
     strands[o + 13] = s.birthDone ? -1 : Math.min(1, s.lock / BIRTH_LOCK_TICKS)
+    strands[o + 14] = s.rest
+    strands[o + 15] = s.bias
   }
   const nO = w.organisms.length
   const organisms = new Float32Array(nO * ORG_STRIDE)
@@ -215,6 +218,7 @@ export function buildSnapshot(w: WorldState, opts: { fields?: boolean; events?: 
     ringOffsets,
     bonds,
     veils,
+    veilIds: new Int32Array(w.veils.map((v) => v.id)),
     pulls,
     radiance: opts.fields ? Float32Array.from(w.field.radiance) : null,
     signal: opts.fields ? new Float32Array(w.field.signal) : null,
@@ -235,7 +239,7 @@ export function buildSnapshot(w: WorldState, opts: { fields?: boolean; events?: 
 
 /** The buffers to transfer (zero-copy) when posting a snapshot from a worker. */
 export function snapshotTransferables(s: RenderSnapshot): ArrayBuffer[] {
-  const list = [s.nodes, s.nodeIds, s.strands, s.strandIds, s.organisms, s.organismIds, s.segs, s.crystalIds, s.segCrystal, s.fragments, s.rings, s.ringIds, s.ringMembers, s.ringOffsets, s.bonds, s.veils, s.pulls]
+  const list = [s.nodes, s.nodeIds, s.strands, s.strandIds, s.organisms, s.organismIds, s.segs, s.crystalIds, s.segCrystal, s.fragments, s.rings, s.ringIds, s.ringMembers, s.ringOffsets, s.bonds, s.veils, s.veilIds, s.pulls]
   if (s.radiance) list.push(s.radiance)
   if (s.signal) list.push(s.signal)
   return list.map((a) => a.buffer as ArrayBuffer)
