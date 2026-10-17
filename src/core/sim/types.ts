@@ -9,6 +9,8 @@ export interface SimNode {
   kind: Kind
   p: Vec3
   v: Vec3
+  /** Net force felt last tick (for the Lens). */
+  force: Vec3
   mass: number
   energy: number
   freq: number
@@ -109,6 +111,7 @@ export interface Crystal {
   /** Lock-in detector for the signal at the crystal's own frequency. */
   iq: number
   qq: number
+  vibMean: number
   resonance: number
   age: number
   name: string | null
@@ -266,6 +269,8 @@ export interface WorldState {
   /** Founding genome of each line of descent, for telling new kinds apart. */
   lineages: { id: number; genome: number[]; born: number }[]
   rings: Ring[]
+  /** Rings lost in the last few seconds; a loop that re-forms from most of the same members is the same ring. */
+  ghosts: { ring: Ring; lostAt: number }[]
   veils: Veil[]
   pulls: PullField[]
   field: { n: number; half: number; radiance: Float64Array; signal: Float32Array; signalVel: Float32Array }
@@ -299,4 +304,5 @@ export interface ChamberState {
   failed: string | null
   memo: Record<string, number>
   startedTick: number
+  note: string
 }

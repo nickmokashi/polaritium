@@ -162,8 +162,21 @@ export function structureStep(w: WorldState, env: EnvParams, byId: Map<number, S
         r.missed = 0
       } else r.missed++
     }
+    w.ghosts = (w.ghosts ?? []).filter((g) => w.tick - g.lostAt < 300)
     for (let i = 0; i < cycles.length; i++) {
       if (used.has(i) || w.rings.length >= 60) continue
+      const gi = w.ghosts.findIndex((g) => jaccard(g.ring.members, cycles[i].members) >= 0.5)
+      if (gi >= 0) {
+        const g = w.ghosts.splice(gi, 1)[0].ring
+        if (cycles[i].members.length !== g.members.length) g.sizes.push(cycles[i].members.length)
+        g.members = cycles[i].members
+        g.edges = cycles[i].edges
+        g.missed = 0
+        g.seen++
+        w.rings.push(g)
+        emit(w, 'ringFormed', g.center, { a: g.id, value: g.members.length, b: g.winding, text: 'returned' })
+        continue
+      }
       w.rings.push({
         id: newId(w),
         members: cycles[i].members,
@@ -192,10 +205,11 @@ export function structureStep(w: WorldState, env: EnvParams, byId: Map<number, S
 
   const keep: Ring[] = []
   for (const r of w.rings) {
-    if (r.missed >= 4 || r.members.some((m) => !byId.has(m))) {
+    if (r.missed >= (r.confirmed ? 10 : 4) || r.members.some((m) => !byId.has(m))) {
       if (r.confirmed) {
         ringProperties(w, r, byId)
         emit(w, 'ringLost', r.center, { a: r.id, value: r.members.length })
+        w.ghosts.push({ ring: { ...r, membrane: null, members: r.members.filter((m) => byId.has(m)) }, lostAt: w.tick })
       }
       if (r.membrane) {
         deposit(w.field.radiance, w.field, r.center, r.membrane.energy)

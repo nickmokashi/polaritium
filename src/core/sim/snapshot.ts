@@ -7,7 +7,7 @@ import { capacity, radiusOf } from './world'
 // What the renderer receives each frame: compact typed arrays read straight from the
 // authoritative state. Every visual is driven by these numbers, nothing else.
 
-export const NODE_STRIDE = 13 // x y z radius fill phase kind sat glow freq flags energy mass
+export const NODE_STRIDE = 16 // x y z radius fill phase kind sat glow freq flags energy mass fx fy fz
 export const STRAND_STRIDE = 14 // a b current tension stress amp twist lock coupling oscFreq carried origin resistance birth
 export const ORG_STRIDE = 20 // x y z hx hy hz radius energy family lobes shell phase flash state hue speed siphon held sens diet
 export const SEG_STRIDE = 10 // ax ay az bx by bz thick stress crystal growing
@@ -80,6 +80,9 @@ export function buildSnapshot(w: WorldState, opts: { fields?: boolean; events?: 
     nodes[o + 10] = (n.well ? 1 : 0) | (n.held ? 2 : 0) | (n.anchor ? 4 : 0) | (n.name ? 8 : 0)
     nodes[o + 11] = n.energy
     nodes[o + 12] = n.mass
+    nodes[o + 13] = n.force.x
+    nodes[o + 14] = n.force.y
+    nodes[o + 15] = n.force.z
     energy += n.energy
   }
   const nS = w.strands.length

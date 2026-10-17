@@ -160,7 +160,7 @@ export function organismStep(w: WorldState, env: EnvParams, dt: number, byId: Ma
     // Metabolism: a body costs energy to keep, motion costs more.
     const speed2 = o.v.x * o.v.x + o.v.y * o.v.y + o.v.z * o.v.z
     let burn = (0.05 + 0.1 * R + 0.03 * g[1] + 0.012 * speed2) * dt
-    if (dormant) burn *= 0.1
+    if (dormant) burn *= 0.35
     o.energy -= burn
     if (o.energy < 0) {
       w.acct.dissipated += burn + o.energy
@@ -201,11 +201,15 @@ export function organismStep(w: WorldState, env: EnvParams, dt: number, byId: Ma
     }
 
     // Oscillating forms flash on each cycle; flashes pull neighbours into step.
-    if (o.family === 'oscillating') {
+    if (o.family === 'oscillating' && !dormant) {
       o.phase += TAU * (0.2 + 1.3 * g[9]) * dt
-      if (o.phase >= TAU) {
+      if (o.phase >= TAU && o.energy <= 0.3) o.phase -= TAU
+      else if (o.phase >= TAU) {
         o.phase -= TAU
         o.flash = 1
+        // A flash costs a little energy, turned into vibration.
+        o.energy -= 0.15
+        w.acct.converted += 0.15
         pulseField(f, o.p, 0.35, 2)
         orgHash.query(o.p, 10, (n) => {
           if (n.id !== o.id && n.family === 'oscillating') n.phase = Math.min(TAU - 1e-6, n.phase + 0.22)
@@ -393,7 +397,7 @@ export function organismStep(w: WorldState, env: EnvParams, dt: number, byId: Ma
     }
 
     const lifespan = 5000 + 7000 * (1 - g[8]) + 2000 * g[11]
-    if (o.energy <= 1e-9 || o.age > lifespan) {
+    if (o.energy < 0.01 || o.age > lifespan) {
       if (o.energy > 0) deposit(f.radiance, f, o.p, o.energy)
       o.energy = 0
       dead.add(o.id)

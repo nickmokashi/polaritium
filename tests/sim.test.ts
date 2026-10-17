@@ -335,6 +335,7 @@ describe('saves', () => {
     delete file.world.found
     delete file.world.memo
     delete file.world.lineages
+    delete file.world.ghosts
     file.schema = 1
     file.checksum = hash53(JSON.stringify(file.world))
     const back = deserializeWorld(JSON.stringify(file))

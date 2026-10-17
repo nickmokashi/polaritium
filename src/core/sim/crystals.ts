@@ -121,6 +121,7 @@ export function nucleate(w: WorldState, env: EnvParams, at: Vec3, anchor: SimNod
     energy: 0,
     iq: 0,
     qq: 0,
+    vibMean: 0,
     resonance: 0,
     age: 0,
     name: null,
@@ -162,7 +163,7 @@ export function crystalStep(w: WorldState, env: EnvParams, dt: number, byId: Map
     }
   }
 
-  const kq = emaK(dt, 2)
+  const kq = emaK(dt, 3)
   const total = crystalSegmentCount(w)
   let budget = LIMITS.crystalSegments - total
   for (const c of w.crystals) {
@@ -196,10 +197,13 @@ export function crystalStep(w: WorldState, env: EnvParams, dt: number, byId: Map
     }
     // Lock-in detection of vibration at the crystal's own frequency.
     const centre = c.segs.length ? { x: c.segs[0].ax, y: c.segs[0].ay, z: c.segs[0].az } : c.origin
-    const u = sample(f.signal, f, centre)
+    // Remove the steady part of the shaking, then measure what is left at the crystal's own frequency.
+    const vibC = vibration(f, centre)
+    c.vibMean += (vibC - c.vibMean) * emaK(dt, 4)
+    const x = vibC - c.vibMean
     const ang = TAU * c.freq * w.tick * dt
-    c.iq += (u * Math.cos(ang) - c.iq) * kq
-    c.qq += (u * Math.sin(ang) - c.qq) * kq
+    c.iq += (x * Math.cos(ang) - c.iq) * kq
+    c.qq += (x * Math.sin(ang) - c.qq) * kq
     c.resonance = 2 * Math.sqrt(c.iq * c.iq + c.qq * c.qq)
 
     const broken: number[] = []
@@ -210,7 +214,7 @@ export function crystalStep(w: WorldState, env: EnvParams, dt: number, byId: Map
       const s = c.segs[i]
       const tip = { x: s.bx, y: s.by, z: s.bz }
       const vib = vibration(f, tip)
-      s.stress += (dt * (c.resonance * 0.9 + Math.max(0, vib - env.stillnessLimit * 2) * 0.35)) / Math.max(0.15, s.thick * 2)
+      s.stress += (dt * (c.resonance * 2.5 + Math.max(0, vib - env.stillnessLimit * 3) * 0.3)) / Math.max(0.2, s.thick * 2)
       s.stress = Math.max(0, s.stress - dt * 0.05)
       if (s.stress >= 1) broken.push(i)
       if (!grow || !s.growing) continue
@@ -341,4 +345,40 @@ function fragmentStep(w: WorldState, env: EnvParams, dt: number): void {
       w.fragments.splice(i, 1)
     }
   }
+}
+
+/** Grows a crystal instantly to about `count` segments (used by chambers and presets). */
+export function growInstant(w: WorldState, c: Crystal, count: number): void {
+  let guard = 0
+  while (c.segs.length < count && guard++ < count * 6) {
+    const tips = c.segs.map((s, i) => [s, i] as const).filter(([s]) => s.children === 0 && s.depth < CRYSTAL_MAX_DEPTH)
+    if (!tips.length) break
+    const [s, i] = tips[Math.floor(nextRandom(w) * tips.length)]
+    if (s.len < CRYSTAL_SEG_LEN) {
+      s.len = CRYSTAL_SEG_LEN
+      s.bx = s.ax + s.dx * s.len
+      s.by = s.ay + s.dy * s.len
+      s.bz = s.az + s.dz * s.len
+    }
+    s.growing = false
+    const tip = { x: s.bx, y: s.by, z: s.bz }
+    const parent = { x: s.dx, y: s.dy, z: s.dz }
+    const cont = snap(c, parent)
+    c.segs.push(makeSeg(tip, cont, i, s.depth + 1, s.thick * 0.86))
+    s.children++
+    if (nextRandom(w) < 0.45) {
+      c.segs.push(makeSeg(tip, branchDir(w, c, parent), i, s.depth + 1, s.thick * 0.72))
+      s.children++
+    }
+  }
+  for (const s of c.segs) {
+    if (s.len < CRYSTAL_SEG_LEN) {
+      s.len = CRYSTAL_SEG_LEN
+      s.bx = s.ax + s.dx * s.len
+      s.by = s.ay + s.dy * s.len
+      s.bz = s.az + s.dz * s.len
+    }
+    s.growing = s.children === 0
+  }
+  c.peak = Math.max(c.peak, c.segs.length)
 }

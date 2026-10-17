@@ -19,6 +19,7 @@ import {
 } from './physics'
 import { structureStep } from './structures'
 import { discoveryStep } from './discovery'
+import { chamberStep } from './chambers'
 import type { WorldState } from './types'
 import { emit, removeStrand } from './world'
 
@@ -58,6 +59,7 @@ export function step(w: WorldState): void {
   organismStep(w, env, dt, byId, sc.hash)
   structureStep(w, env, byId)
   discoveryStep(w)
+  if (w.chamber) chamberStep(w)
 
   for (const v of w.veils) v.ticks--
   w.veils = w.veils.filter((v) => v.ticks > 0)

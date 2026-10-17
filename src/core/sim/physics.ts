@@ -442,6 +442,7 @@ export function integrate(w: WorldState, env: EnvParams, dt: number, sc: StepScr
       n.v = { x: vx, y: vy, z: vz }
     } else {
       const f = sc.force.get(n.id)!
+      n.force = { x: finite(f.x), y: finite(f.y), z: finite(f.z) }
       const inv = 1 / Math.max(0.1, n.mass)
       n.v.x = (n.v.x + f.x * inv * dt) * damp
       n.v.y = (n.v.y + f.y * inv * dt) * damp

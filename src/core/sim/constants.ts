@@ -23,7 +23,7 @@ export const FREQ_MAX = 2.5
 export const WHITE_GEN_RATE = 5.0 // energy per second per unit mass, scaled by (1 - fill)
 export const WHITE_RADIATE = 0.45 // fraction of stored energy radiated per second
 export const BLACK_INTAKE = 0.5 // per second per unit mass, times local radiance and (1 - fill)
-export const BLACK_LEAK = 0.004 // retention: almost nothing leaks
+export const BLACK_LEAK = 0.0005 // retention: almost nothing leaks
 export const BLACK_SATURATION = 0.97
 export const BLACK_COLLAPSE_TICKS = 150 // 5 s held at saturation
 export const WHITE_OVERLOAD_TICKS = 240 // 8 s held overfull while stressed
@@ -39,7 +39,7 @@ export const SOFTENING = 3
 export const FORCE_CUTOFF = 34
 export const COLLISION_K = 30
 export const MAX_SPEED = 25
-export const TWIST_DRIVE = 0.6
+export const TWIST_DRIVE = 0.25
 
 // Strands (an RLC-like transfer path)
 export const STRAND_DRIVE = 12 // S: how hard a potential difference pushes flow

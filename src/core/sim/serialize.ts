@@ -114,7 +114,7 @@ type Migration = (world: Record<string, unknown>) => Record<string, unknown>
 
 // Schema 1 (the first internal builds) had no discovery memory and no lines of descent.
 const MIGRATIONS: Record<number, Migration> = {
-  1: (wd) => ({ ...wd, found: wd.found ?? {}, memo: wd.memo ?? {}, lineages: wd.lineages ?? [] })
+  1: (wd) => ({ ...wd, found: wd.found ?? {}, memo: wd.memo ?? {}, lineages: wd.lineages ?? [], ghosts: wd.ghosts ?? [] })
 }
 
 export function migrate(schema: number, world: Record<string, unknown>): Record<string, unknown> {
@@ -161,7 +161,7 @@ export function reviveWorld(wd: Record<string, unknown>): WorldState {
   const f = wd.field as { n: number; half: number; radiance: string; signal: string; signalVel: string } | undefined
   if (!f || !Number.isInteger(f.n) || f.n < 4 || f.n > 64 || !Number.isFinite(f.half)) throw new SaveError('shape', 'The saved world has no valid field.')
   const cells = f.n * f.n * f.n
-  for (const k of ['nodes', 'strands', 'crystals', 'fragments', 'organisms', 'bonds', 'rings', 'veils', 'pulls', 'log', 'scars', 'traitHistory', 'lineages']) {
+  for (const k of ['nodes', 'strands', 'crystals', 'fragments', 'organisms', 'bonds', 'rings', 'veils', 'pulls', 'log', 'scars', 'traitHistory', 'lineages', 'ghosts']) {
     if (!Array.isArray(wd[k])) throw new SaveError('shape', `The saved world is missing its ${k}.`)
   }
   if (!ENVIRONMENTS[wd.env as keyof typeof ENVIRONMENTS]) throw new SaveError('shape', 'The saved world names an unknown environment.')
