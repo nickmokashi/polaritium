@@ -1,0 +1,93 @@
+{
+  "name": "polaritium",
+  "productName": "Polaritium",
+  "version": "1.0.0",
+  "description": "A living universe of opposing forces. Reach into the medium, connect, twist, pulse and tune, and see what emerges.",
+  "private": true,
+  "author": "Greygray",
+  "license": "UNLICENSED",
+  "main": "out/main/index.js",
+  "scripts": {
+    "dev": "electron-vite dev",
+    "build": "electron-vite build",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "web": "node scripts/serve-web.mjs",
+    "e2e": "playwright test",
+    "perf": "node scripts/perf.mjs",
+    "icons": "node scripts/make-icons.mjs",
+    "dist": "electron-vite build && electron-builder --win --publish never",
+    "dist:dir": "electron-vite build && electron-builder --win --dir --publish never",
+    "selftest": "electron . --selftest"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "0.130.0",
+    "zod": "4.4.3"
+  },
+  "devDependencies": {
+    "@fontsource/cormorant-garamond": "5.3.0",
+    "@fontsource/inter": "5.3.0",
+    "@playwright/test": "1.63.0",
+    "@react-three/fiber": "9.8.2",
+    "@react-three/postprocessing": "3.2.0",
+    "@types/node": "^22.18.0",
+    "@types/react": "^19.2.0",
+    "@types/react-dom": "^19.2.0",
+    "@types/three": "0.186.0",
+    "@vitejs/plugin-react": "5.2.0",
+    "camera-controls": "3.1.0",
+    "electron": "44.4.1",
+    "electron-builder": "26.15.3",
+    "electron-vite": "5.0.0",
+    "postprocessing": "6.39.5",
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
+    "three": "0.186.1",
+    "typescript": "5.9.3",
+    "vite": "7.3.7",
+    "vitest": "4.1.12",
+    "zustand": "5.0.14"
+  },
+  "build": {
+    "appId": "com.greygray.polaritium",
+    "productName": "Polaritium",
+    "copyright": "Copyright 2026 Greygray",
+    "artifactName": "Polaritium Setup ${version}.${ext}",
+    "directories": {
+      "output": "dist",
+      "buildResources": "build"
+    },
+    "files": [
+      "out/**/*",
+      "package.json"
+    ],
+    "asarUnpack": [
+      "**/*.wasm"
+    ],
+    "win": {
+      "icon": "build/icon.ico",
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "Polaritium",
+      "uninstallDisplayName": "Polaritium",
+      "installerIcon": "build/icon.ico",
+      "uninstallerIcon": "build/icon.ico",
+      "deleteAppDataOnUninstall": false,
+      "license": "build/license.txt"
+    }
+  }
+}
