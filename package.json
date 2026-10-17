@@ -16,10 +16,11 @@
     "web": "node scripts/serve-web.mjs",
     "e2e": "playwright test",
     "perf": "node scripts/perf.mjs",
-    "icons": "node scripts/make-icons.mjs",
-    "dist": "electron-vite build && electron-builder --win --publish never",
-    "dist:dir": "electron-vite build && electron-builder --win --dir --publish never",
-    "selftest": "electron . --selftest"
+    "icons": "electron scripts/make-icons.mjs build/icon.svg build icon",
+    "dist": "node scripts/notices.mjs && electron-vite build && electron-builder --win --publish never",
+    "dist:dir": "node scripts/notices.mjs && electron-vite build && electron-builder --win --dir --publish never",
+    "selftest": "electron . --selftest",
+    "notices": "node scripts/notices.mjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "0.130.0",
@@ -88,6 +89,15 @@
       "uninstallerIcon": "build/icon.ico",
       "deleteAppDataOnUninstall": false,
       "license": "build/license.txt"
-    }
+    },
+    "extraFiles": [
+      {
+        "from": "build/licenses",
+        "to": "licenses",
+        "filter": [
+          "**/*"
+        ]
+      }
+    ]
   }
 }

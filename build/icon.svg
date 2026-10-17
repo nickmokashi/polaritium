@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256">
+  <defs>
+    <radialGradient id="tile" cx="35%" cy="30%" r="85%">
+      <stop offset="0" stop-color="#1b1b21"/>
+      <stop offset="1" stop-color="#060607"/>
+    </radialGradient>
+    <radialGradient id="light" cx="45%" cy="40%" r="60%">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset="0.7" stop-color="#f1efe9"/>
+      <stop offset="1" stop-color="#d7d5cf"/>
+    </radialGradient>
+    <radialGradient id="glow" cx="50%" cy="50%" r="50%">
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0.55"/>
+      <stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="dark" cx="40%" cy="35%" r="70%">
+      <stop offset="0" stop-color="#26262c"/>
+      <stop offset="1" stop-color="#020203"/>
+    </radialGradient>
+  </defs>
+  <rect x="8" y="8" width="240" height="240" rx="52" fill="url(#tile)"/>
+  <rect x="8.5" y="8.5" width="239" height="239" rx="51.5" fill="none" stroke="#3a3b44" stroke-width="3"/>
+  <circle cx="84" cy="98" r="62" fill="url(#glow)"/>
+  <path d="M96 112 C 128 120, 140 140, 160 150" fill="none" stroke="#c9ccd8" stroke-width="12" stroke-linecap="round"/>
+  <circle cx="129" cy="128" r="10" fill="#ffffff"/>
+  <circle cx="84" cy="98" r="40" fill="url(#light)"/>
+  <circle cx="174" cy="162" r="44" fill="url(#dark)"/>
+  <circle cx="174" cy="162" r="44" fill="none" stroke="#d3d6e0" stroke-width="9"/>
+</svg>

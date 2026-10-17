@@ -39,7 +39,7 @@ function createWindow(): void {
     backgroundColor: '#050506',
     title: 'Polaritium',
     autoHideMenuBar: true,
-    icon: join(__dirname, '..', '..', 'build', 'icon.ico'),
+    ...(app.isPackaged ? {} : { icon: join(__dirname, '..', '..', 'build', 'icon.ico') }),
     paintWhenInitiallyHidden: true,
     skipTaskbar: hidden,
     focusable: !hidden,
@@ -252,9 +252,16 @@ app.whenReady().then(() => {
   ai = new AiMain(store)
   serveApp()
   // The page may not reach the network at all; only the main process talks to Anthropic.
+  const ownFiles = pathToFileURL(rendererRoot).toString().toLowerCase()
   session.defaultSession.webRequest.onBeforeRequest((details, cb) => {
     const u = details.url
-    const ok = u.startsWith('app://') || u.startsWith('devtools://') || u.startsWith('data:') || u.startsWith('blob:') || (!!process.env.ELECTRON_RENDERER_URL && u.startsWith(process.env.ELECTRON_RENDERER_URL))
+    const ok =
+      u.startsWith('app://') ||
+      u.startsWith('devtools://') ||
+      u.startsWith('data:') ||
+      u.startsWith('blob:') ||
+      u.toLowerCase().startsWith(ownFiles) ||
+      (!!process.env.ELECTRON_RENDERER_URL && u.startsWith(process.env.ELECTRON_RENDERER_URL))
     cb({ cancel: !ok })
   })
   session.defaultSession.setPermissionRequestHandler((_wc, _perm, cb) => cb(false))

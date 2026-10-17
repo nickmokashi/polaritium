@@ -20,6 +20,7 @@ async function waitFor(fn: () => boolean, ms: number): Promise<boolean> {
 
 export async function runSelftest(): Promise<void> {
   const mode = new URLSearchParams(location.search).get('selftest') ?? 'first'
+  if (mode !== 'first' && mode !== 'reload') return
   const steps: { name: string; ok: boolean; detail?: string }[] = []
   const step = (name: string, ok: boolean, detail?: string) => steps.push({ name, ok, detail })
   const report: Record<string, unknown> = { mode, steps, started: new Date().toISOString() }
@@ -52,6 +53,7 @@ export async function runSelftest(): Promise<void> {
       step('the universe was saved', await waitFor(() => false, 1500) || (await bridge.universes.list()).some((u) => u.name === 'Self-test universe'))
       const img = await snapshotThumb(640, 360)
       step('a picture can be rendered', !!img && img.length > 2000)
+      report.image = img
       const st = await bridge.settings.get()
       await bridge.settings.set({ ...st, audio: { ...st.audio, master: 0.55 } })
       step('settings can be saved', (await bridge.settings.get()).audio.master === 0.55)
@@ -73,6 +75,7 @@ export async function runSelftest(): Promise<void> {
           const t0 = view.host?.info?.tick ?? 0
           await sleep(2500)
           step('the reloaded world keeps running', (view.host?.info?.tick ?? 0) > t0 + 15)
+          report.image = await snapshotThumb(640, 360)
         }
       }
     }
