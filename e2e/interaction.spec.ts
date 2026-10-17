@@ -317,7 +317,29 @@ test.describe('saving and branching', () => {
     expect((await ents(page)).strands.length).toBeGreaterThanOrEqual(1)
   })
 
-  test('checkpoint, then branch from it', async ({ page }) => {
+  test('the universe list renames and exports', async ({ page }) => {
+    await startLab(page)
+    await page.getByTestId('save').click()
+    await page.waitForTimeout(1200)
+    await page.getByTestId('game-menu').click()
+    await page.getByTestId('pause-menu').getByRole('button', { name: /main menu/i }).click()
+    const list = page.getByTestId('universe-list')
+    await expect(list).toBeVisible()
+    await list.getByRole('button', { name: 'Rename' }).first().click()
+    const input = list.getByRole('textbox', { name: 'New name' })
+    await input.fill('The Long Afternoon')
+    await input.press('Enter')
+    await expect(list.getByRole('button', { name: /The Long Afternoon/ })).toBeVisible()
+    const download = page.waitForEvent('download')
+    await list.getByRole('button', { name: 'Export' }).first().click()
+    const file = await download
+    expect(file.suggestedFilename()).toBe('The Long Afternoon.polaritium')
+    const body = JSON.parse(require('node:fs').readFileSync(await file.path(), 'utf8'))
+    expect(body.format).toBe('polaritium-universe')
+    expect(body.meta.name).toBe('The Long Afternoon')
+  })
+
+    test('checkpoint, then branch from it', async ({ page }) => {
     await startLab(page)
     await page.waitForTimeout(800)
     await page.getByTestId('checkpoint').click()

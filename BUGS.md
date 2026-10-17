@@ -20,6 +20,11 @@ Found while building and testing. All listed bugs are fixed and covered by a tes
 | 14 | desktop tests | The page could not load: the network block also blocked the app's own files | Own files allowed through, everything else still blocked |
 | 15 | packaged self-test | Hidden window barely advanced (throttled frames) | Timer pacing in hidden mode (Decision 19) |
 | 16 | installer check | Picture capture waited for a frame that a hidden window never got | Pictures render on demand |
+| 17 | performance review | The 30-frame limit and Reflections settings did nothing | Frame limiter and mirror glints (Decisions 24, 25); frame-rate test |
+| 18 | visual tour | After faster crystal growth, crystals became a tangle of grey bars reaching the walls | Weaker growth each generation, fewer generations, thinner glass facets (Decision 26) |
+| 19 | documentation review | Closing the window with X lost up to three minutes of play | Save on close (Decision 27); desktop test |
+| 20 | documentation review | The saved-universe list and Import only appeared with two or more universes; Export and Rename had no button | List always shown, every universe listed, Rename and Export per row and Export in the in-game menu; interface test |
+| 21 | export picture | Share card label cut off in the size list | Shorter label |
 
 ## Open
 

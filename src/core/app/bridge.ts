@@ -151,6 +151,8 @@ export interface Bridge {
     openLink(which: 'models' | 'pricing' | 'workspaces' | 'console'): Promise<void>
     selftest?: (report: Record<string, unknown>) => Promise<void>
     isSelftest(): Promise<boolean>
+    /** Desktop only: run this (e.g. save) when the player closes the window, before it closes. */
+    onClosing?: (cb: () => Promise<void>) => void
   }
 }
 

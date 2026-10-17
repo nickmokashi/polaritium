@@ -41,7 +41,15 @@ function MenuBackdrop() {
 
 export function MainMenu() {
   const [universes, setUniverses] = useState<UniverseMeta[]>([])
+  const [renaming, setRenaming] = useState<{ id: string; name: string } | null>(null)
   const settings = useUI((s) => s.settings)
+  const finishRename = async () => {
+    if (!renaming) return
+    const name = renaming.name.trim()
+    if (name) await bridge.universes.rename(renaming.id, name.slice(0, 60))
+    setRenaming(null)
+    setUniverses(await bridge.universes.list())
+  }
   useEffect(() => {
     void bridge.universes.list().then(setUniverses)
   }, [])
@@ -104,14 +112,47 @@ export function MainMenu() {
           </button>
         ))}
       </div>
-      {universes.length > 1 && (
-        <div className="panel col fade-in scroll" style={{ position: 'absolute', right: 24, bottom: 44, width: 300, maxHeight: '38vh', padding: 12 }}>
+      {(
+        <div className="panel col fade-in scroll" style={{ position: 'absolute', right: 24, bottom: 44, width: 360, maxHeight: '42vh', padding: 12 }} data-testid="universe-list">
           <span className="caps">Your universes</span>
-          {universes.slice(0, 12).map((u) => (
-            <div key={u.id} className="row" style={{ gap: 8 }}>
-              <button className="btn ghost" style={{ flex: 1, justifyContent: 'flex-start' }} onClick={() => void openUniverse(u)} title="Open this universe">
-                {u.name} <span className="faint">{formatTime(u.tick)}</span>
-              </button>
+          {!universes.length && <span className="faint">Nothing saved yet. Every experiment you start is kept here.</span>}
+          {universes.map((u) => (
+            <div key={u.id} className="row" style={{ gap: 4 }}>
+              {renaming?.id === u.id ? (
+                <input
+                  type="text"
+                  value={renaming.name}
+                  autoFocus
+                  maxLength={60}
+                  onChange={(e) => setRenaming({ id: u.id, name: e.target.value })}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') void finishRename()
+                    if (e.key === 'Escape') setRenaming(null)
+                  }}
+                  onBlur={() => void finishRename()}
+                  style={{ flex: 1 }}
+                  aria-label="New name"
+                />
+              ) : (
+                <button className="btn ghost" style={{ flex: 1, justifyContent: 'flex-start' }} onClick={() => void openUniverse(u)} title="Open this universe">
+                  {u.name} <span className="faint">{formatTime(u.tick)}</span>
+                </button>
+              )}
+              <Btn small kind="ghost" title="Rename this universe" onClick={() => setRenaming({ id: u.id, name: u.name })}>
+                Rename
+              </Btn>
+              <Btn
+                small
+                kind="ghost"
+                title="Save this universe as a .polaritium file you can keep or share"
+                onClick={async () => {
+                  const r = await bridge.universes.exportFile(u.id)
+                  if (r.ok) useUI.getState().toast(r.value ? `Exported to ${r.value}` : 'Exported.', 'info')
+                  else if (r.error) useUI.getState().toast(`Could not export: ${r.error}`, 'warn')
+                }}
+              >
+                Export
+              </Btn>
               <Btn
                 small
                 kind="ghost"

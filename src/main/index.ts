@@ -21,6 +21,16 @@ const hidden = !!selftest || process.env.POLARITIUM_HIDDEN === '1'
 
 app.setName('Polaritium')
 if (!selftest && !app.requestSingleInstanceLock()) app.quit()
+// A second launch brings the open window forward; the lock is let go as the game closes, so
+// reopening it straight away works.
+app.on('second-instance', () => {
+  if (!win) return
+  if (win.isMinimized()) win.restore()
+  win.focus()
+})
+app.on('will-quit', () => {
+  if (!selftest) app.releaseSingleInstanceLock()
+})
 
 protocol.registerSchemesAsPrivileged([{ scheme: 'app', privileges: { standard: true, secure: true, supportFetchAPI: true, stream: true } }])
 
@@ -28,6 +38,8 @@ let win: BrowserWindow | null = null
 let store: Store
 let ai: AiMain
 const rendererRoot = join(__dirname, '..', 'renderer')
+
+let closeReady = false
 
 function createWindow(): void {
   win = new BrowserWindow({
@@ -68,6 +80,17 @@ function createWindow(): void {
       const s = store.getSettings()
       if (s.display.fullscreen) win?.setFullScreen(true)
     }
+  })
+  // Closing the window first lets the page save the open universe (it answers app:closeReady),
+  // with a short limit so a stuck page can never keep the game from closing.
+  win.on('close', (e) => {
+    if (closeReady || !win) return
+    e.preventDefault()
+    win.webContents.send('app:closing')
+    setTimeout(() => {
+      closeReady = true
+      win?.close()
+    }, 4000)
   })
   win.on('closed', () => (win = null))
 }
@@ -225,6 +248,10 @@ function registerIpc(): void {
   handle('ai:registry:set', (reg) => ai.setRegistry(reg as never))
 
   handle('app:quit', () => app.quit())
+  handle('app:closeReady', () => {
+    closeReady = true
+    win?.close()
+  })
   handle('app:setFullscreen', (on: boolean) => {
     win?.setFullScreen(!!on)
     return !!win?.isFullScreen()

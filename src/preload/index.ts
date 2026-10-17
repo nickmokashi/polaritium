@@ -52,7 +52,16 @@ const bridge: Bridge = {
     setFullscreen: call('app:setFullscreen') as never,
     openLink: call('app:openLink') as never,
     isSelftest: call('app:isSelftest') as never,
-    selftest: call('app:selftest') as never
+    selftest: call('app:selftest') as never,
+    onClosing: (cb: () => Promise<void>) => {
+      ipcRenderer.removeAllListeners('app:closing')
+      ipcRenderer.on('app:closing', () => {
+        void Promise.resolve()
+          .then(cb)
+          .catch(() => undefined)
+          .finally(() => void ipcRenderer.invoke('app:closeReady'))
+      })
+    }
   }
 }
 

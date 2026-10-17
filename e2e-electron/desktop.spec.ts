@@ -64,6 +64,28 @@ test('a saved universe and the settings survive a restart', async () => {
   await app.close()
 })
 
+test('closing the window saves the open universe first', async () => {
+  const dir = mkdtempSync(join(tmpdir(), 'polaritium-e2e-'))
+  let { app, page } = await launch(dir)
+  await page.getByTestId('menu-new').click()
+  await page.getByTestId('start-experiment').click()
+  await expect(page.getByTestId('tool-rail')).toBeVisible({ timeout: 30000 })
+  // the first save happens a few seconds after starting; the close must save what came after it
+  await page.waitForTimeout(7000)
+  const first = await page.evaluate(() => (window as any).polaritium.universes.list())
+  expect(first).toHaveLength(1)
+  await page.waitForTimeout(6000)
+  const exited = new Promise<void>((r) => app.process().once('exit', () => r()))
+  await app.evaluate(({ BrowserWindow }) => BrowserWindow.getAllWindows()[0].close())
+  await exited
+  ;({ app, page } = await launch(dir))
+  await expect(page.getByTestId('menu-continue')).toBeEnabled({ timeout: 30000 })
+  const list = await page.evaluate(() => (window as any).polaritium.universes.list())
+  expect(list).toHaveLength(1)
+  expect(list[0].tick).toBeGreaterThan(first[0].tick + 100)
+  await app.close()
+})
+
 test('the Claude key is stored encrypted and never returned to the page', async () => {
   const dir = mkdtempSync(join(tmpdir(), 'polaritium-e2e-'))
   const { app, page } = await launch(dir)

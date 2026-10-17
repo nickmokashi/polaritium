@@ -14,7 +14,7 @@ const SIZES = [
   { id: 'square', label: 'Square (1080 × 1080)', w: 1080, h: 1080 },
   { id: 'portrait', label: 'Portrait (1080 × 1350)', w: 1080, h: 1350 },
   { id: 'wide', label: 'Wide (1920 × 1080)', w: 1920, h: 1080 },
-  { id: 'card', label: 'Share card, good for Substack (1200 × 630)', w: 1200, h: 630 }
+  { id: 'card', label: 'Share card for links (1200 × 630)', w: 1200, h: 630 }
 ]
 type Layout = 'image' | 'title' | 'explain' | 'measure' | 'caption'
 const LAYOUTS: { id: Layout; label: string }[] = [

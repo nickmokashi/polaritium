@@ -7,6 +7,7 @@ import { RULES_VERSION } from '@core/sim/constants'
 import type { Laws, SimEvent } from '@core/sim/types'
 import { audio } from '../audio/engine'
 import { bridge } from '../bridge'
+import { onBeforeClose } from '../closing'
 import { cam, currentPose } from '../scene/camera'
 import { capture, Scene } from '../scene/Scene'
 import { pushFx } from '../scene/FxLayer'
@@ -182,6 +183,9 @@ export function Game() {
     if (r.ok) await bridge.atlas.update(entry.id, { ai: `Claude suggests names: ${r.text}` })
   }
 
+  // Closing the window saves first.
+  useEffect(() => onBeforeClose(async () => void (await save(true))), [save])
+
   // Autosave.
   useEffect(() => {
     const minutes = useUI.getState().settings.data.autosaveMinutes
@@ -316,6 +320,21 @@ export function Game() {
                 }}
               >
                 Add this moment to the Living Gallery
+              </Btn>
+            )}
+            {!chamber && !spec.exhibit && (
+              <Btn
+                onClick={async () => {
+                  await save(true)
+                  const id = metaRef.current?.id
+                  const r = id ? await bridge.universes.exportFile(id) : { ok: false, error: 'Save it first.' }
+                  if (r.ok) useUI.getState().toast(r.value ? `Exported to ${r.value}` : 'Exported.', 'info')
+                  else if (r.error) useUI.getState().toast(`Could not export: ${r.error}`, 'warn')
+                  setMenu(false)
+                }}
+                title="Saves this universe as a .polaritium file you can keep or give to someone"
+              >
+                Export to a file
               </Btn>
             )}
             {chamber && <Btn onClick={() => void leave('chambers')}>Back to the Paradox Chambers</Btn>}

@@ -25,3 +25,8 @@ Significant choices, with the reason. Newest last.
 21. **Fonts bundled locally** (Cormorant Garamond, Inter; SIL OFL) so the game is fully offline.
 22. **Icon:** a light and a ringed dark joined by a strand (`build/icon.svg`). Not the retired split disc. Greygray's call to keep or change.
 23. **Installer not code-signed** (no certificate). Windows SmartScreen will warn on first run; documented.
+24. **Frames are drawn by a limiter, not the screen's refresh rate.** The 3D view runs `frameloop="never"` and a small loop advances it at most 30 or 60 times a second (the graphics setting), so faster screens do not make laptops run hot. The simulation's pace never depends on it.
+25. **Reflections are mirror glints of the simulated emitters** on crystals, greys, darks and living forms (High and Ultra). They read the same top-six light list the lighting uses, so they show only what is really shining.
+26. **Each generation of crystal growth is weaker than the last** (vigour falls with depth; at most 7 generations and 90 facets). Growing toward light used to speed growth up without limit, so crystals raced to the edge of the world.
+27. **Closing the window saves first.** The desktop process holds the close, asks the page to save, and closes when it answers, or after four seconds at most so a stuck page can never trap the player.
+28. **The single-instance lock is released as the game quits,** and a second launch brings the open window forward, so reopening straight after closing always works.
