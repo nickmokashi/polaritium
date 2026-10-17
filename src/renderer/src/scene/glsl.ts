@@ -47,6 +47,23 @@ vec3 litBy(vec3 pos, vec3 n, vec3 v, float shininess, float spec){
   }
   return acc;
 }
+// Mirror glints: polished surfaces show a sharp image of each simulated emitter. Only drawn
+// when the Reflections graphics setting is on (High and Ultra).
+uniform float uReflect;
+vec3 glints(vec3 pos, vec3 n, vec3 v){
+  if (uReflect < 0.5) return vec3(0.0);
+  vec3 r = reflect(-v, n);
+  vec3 acc = vec3(0.0);
+  for(int i=0;i<6;i++){
+    if(i>=uLightCount) break;
+    vec3 L = uLights[i].xyz - pos;
+    float d = length(L);
+    L /= max(d,1e-3);
+    float fall = uLights[i].w / (1.0 + d*d*0.006);
+    acc += vec3(1.0,0.99,0.97) * pow(max(dot(r,L),0.0), 700.0) * fall * 3.0;
+  }
+  return acc;
+}
 `
 
 export const FOG = /* glsl */ `

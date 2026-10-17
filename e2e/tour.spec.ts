@@ -8,8 +8,10 @@ async function start(page: Page, env: string, preset: string) {
   await page.getByTestId('menu-new').click()
   await page.getByTestId(`env-${env}`).click()
   await page.getByTestId(`preset-${preset}`).click()
+  const t0 = Date.now()
   await page.getByTestId('start-experiment').click()
-  await expect(page.getByTestId('tool-rail')).toBeVisible()
+  await expect(page.getByTestId('tool-rail')).toBeVisible({ timeout: 20_000 })
+  console.log(`${env} ${preset}: game ready in ${Date.now() - t0} ms`)
   const skip = page.getByTestId('tutorial').getByRole('button')
   if (await skip.isVisible().catch(() => false)) await skip.click()
 }

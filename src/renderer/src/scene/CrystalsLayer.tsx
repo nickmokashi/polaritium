@@ -37,13 +37,15 @@ void main(){
   float env = smoothstep(-0.2, 1.0, r.y)*0.5 + 0.05;
   vec3 irid = 0.5 + 0.5*cos(6.2831*(fres*1.3 + vec3(0.0, 0.33, 0.67)));
   vec3 lit = litBy(vWorld, n, v, 120.0, 2.5);
-  vec3 col = vec3(0.07,0.08,0.1) + vec3(0.75,0.8,0.88)*env*0.6 + lit*vec3(0.5,0.55,0.6) + mix(vec3(0.85), irid, 0.35)*fres*0.9;
+  vec3 col = vec3(0.03,0.035,0.045) + vec3(0.75,0.8,0.88)*env*0.22 + lit*vec3(0.45,0.5,0.56) + mix(vec3(0.9), irid, 0.4)*fres*1.3;
   float tip = vC.y * smoothstep(0.1, 0.5, vObj.y);
   col += vec3(0.9,0.95,1.0)*tip*(0.8 + 0.4*sin(uTime*3.0 + vC.z));
   float crack = smoothstep(0.75, 0.95, abs(snoise(vObj*vec3(4.0,9.0,4.0) + vC.z)))*smoothstep(0.3, 1.0, vC.x);
+  col += glints(vWorld, n, v);
   col = mix(col, vec3(1.0,0.72,0.4)*1.6, crack);
   col *= mix(1.0, 0.45, uSight);
-  gl_FragColor = vec4(applyFog(col, vDist*0.6), 0.88 + fres*0.12);
+  float alpha = clamp(0.42 + fres*0.55 + tip*0.4 + crack*0.5, 0.0, 1.0);
+  gl_FragColor = vec4(applyFog(col, vDist*0.6), alpha);
 }`
 
 export function CrystalsLayer() {
@@ -54,7 +56,7 @@ export function CrystalsLayer() {
       vertexShader: VERT,
       fragmentShader: FRAG,
       transparent: true,
-      uniforms: { uTime: uniforms.uTime, uSight: uniforms.uSight, uLights: view.u.uLights, uLightCount: view.u.uLightCount, uFogColor: uniforms.uFogColor, uFogDensity: uniforms.uFogDensity }
+      uniforms: { uTime: uniforms.uTime, uSight: uniforms.uSight, uLights: view.u.uLights, uLightCount: view.u.uLightCount, uReflect: uniforms.uReflect, uFogColor: uniforms.uFogColor, uFogDensity: uniforms.uFogDensity }
     })
     const segs = makeInstanced(prism, mat, LIMITS.crystalSegments, { aC: 4 })
     const shard = new THREE.OctahedronGeometry(0.6, 0).toNonIndexed()

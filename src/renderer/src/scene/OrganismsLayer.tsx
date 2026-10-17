@@ -66,6 +66,7 @@ void main(){
   vec3 col = body + tint*rim*(0.35 + energy*0.8);
   if (fam < 0.5) col = tint*rim*(0.5+energy) + vec3(0.9,0.92,1.0)*inner*inner*(0.15 + energy*0.6);
   col += vec3(1.0,0.98,0.94)*flash*1.8 + vec3(0.6,0.95,0.9)*vO3.x*0.6;
+  col += glints(vWorld, n, v) * (fam < 0.5 ? 0.25 : 0.45);
   col *= mix(1.0, 0.3, dormant);
   col *= mix(1.0, 0.6, uSight);
   float alpha = fam < 0.5 ? clamp(0.35 + rim*0.7 + inner*0.3, 0.0, 1.0) : 1.0;
@@ -86,6 +87,7 @@ export function OrganismsLayer() {
         uFlashLimit: uniforms.uFlashLimit,
         uLights: view.u.uLights,
         uLightCount: view.u.uLightCount,
+        uReflect: uniforms.uReflect,
         uFogColor: uniforms.uFogColor,
         uFogDensity: uniforms.uFogDensity
       }

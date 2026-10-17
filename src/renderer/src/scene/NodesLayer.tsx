@@ -76,6 +76,7 @@ void main(){
   vec3 col = base + rimCol * rimP * (0.8 + 1.4*fill + 0.8*well) + lit*0.35*pow(max(dot(reflect(-v,n), vec3(0.0,1.0,0.0)),0.0),12.0);
   col += vec3(0.85,0.8,1.0) * vData.z * rimP * 1.5;
   col += vData2.w * vec3(0.3)*rimP;
+  col += glints(vWorld, n, v) * 0.6;
   col *= mix(1.0, 0.5, uSight);
   gl_FragColor = vec4(applyFog(col, vDist*0.6), 1.0);
 }`
@@ -97,6 +98,7 @@ void main(){
   vec3 col = vec3(0.6,0.62,0.66)*env + lit*vec3(0.55,0.56,0.6) + vec3(0.7,0.72,0.78)*pow(1.0-ndv,2.5)*0.35;
   col += vec3(1.0,0.98,0.95) * glow * 2.4 + vec3(0.25,0.26,0.3)*fill*0.6;
   col += vData2.w * vec3(0.3)*pow(1.0-ndv,1.5);
+  col += glints(vWorld, n, v) * 0.9;
   col *= mix(1.0, 0.55, uSight);
   gl_FragColor = vec4(applyFog(col, vDist*0.6), 1.0);
 }`
@@ -154,7 +156,8 @@ function material(frag: string, view: ViewState): THREE.ShaderMaterial {
       uFogColor: uniforms.uFogColor,
       uFogDensity: uniforms.uFogDensity,
       uSight: uniforms.uSight,
-      uFlashLimit: uniforms.uFlashLimit
+      uFlashLimit: uniforms.uFlashLimit,
+      uReflect: uniforms.uReflect
     }
   })
 }

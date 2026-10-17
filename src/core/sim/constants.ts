@@ -66,8 +66,8 @@ export const QUICKEN_ENERGY = 60
 
 // Crystals
 export const CRYSTAL_SEG_LEN = 3
-export const CRYSTAL_MAX_SEGS = 160
-export const CRYSTAL_MAX_DEPTH = 9
+export const CRYSTAL_MAX_SEGS = 90
+export const CRYSTAL_MAX_DEPTH = 7
 
 // Organisms
 export const GENES = 13

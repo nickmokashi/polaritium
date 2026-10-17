@@ -14,7 +14,8 @@ export const uniforms = {
   uFogDensity: { value: 0.01 },
   uSight: { value: 0 },
   uLens: { value: 0 },
-  uFlashLimit: { value: 1 }
+  uFlashLimit: { value: 1 },
+  uReflect: { value: 0 }
 }
 
 function viewUniforms() {

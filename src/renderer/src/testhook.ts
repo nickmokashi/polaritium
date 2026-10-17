@@ -4,6 +4,7 @@ import { entityWorld } from './scene/Interaction'
 import { view } from './scene/shared'
 import { useUI } from './state/store'
 import { cam } from './scene/camera'
+import { drawStats } from './scene/Scene'
 
 // Only installed when the page is opened with ?test (the headless interface tests). It lets a
 // test find where things are on screen so it can click them like a player. The game never
@@ -42,6 +43,8 @@ export function installTestHook(): void {
       return { tick: s.tick, nodes, strands, organisms: s.organismIds.length, rings: s.ringIds.length, veils: s.veils.length / VEIL_STRIDE, crystals: s.crystalIds.length, events: s.events.map((e) => e.type) }
     },
     info: () => view.host?.info ?? null,
+    frames: () => drawStats.frames,
+    frameMs: () => ({ ms: drawStats.ms, n: drawStats.timed }),
     eventLog: () => [...view.eventLog],
     ui: () => {
       const u = useUI.getState()

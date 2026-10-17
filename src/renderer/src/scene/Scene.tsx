@@ -30,7 +30,33 @@ export interface CaptureRequest {
   resolve: (dataUrl: string) => void
 }
 
+/** Frames drawn so far (read by the performance test). */
+export const drawStats = { frames: 0, ms: 0, timed: 0 }
+
 export const capture = { pending: null as CaptureRequest | null, now: null as ((w: number, h: number) => string) | null }
+
+// Draws at most the chosen frames a second (30 or 60), even on faster screens, so the game
+// runs cooler. The simulation's pace does not depend on this: it advances by real time.
+function FrameLimiter({ fps }: { fps: number }) {
+  const advance = useThree((s) => s.advance)
+  useEffect(() => {
+    const interval = 1000 / fps
+    let last = -1e9
+    let raf = 0
+    const loop = (t: number) => {
+      raf = requestAnimationFrame(loop)
+      if (t - last < interval - 1) return
+      last = Math.max(last + interval, t - interval)
+      const s = performance.now()
+      advance(t)
+      drawStats.ms += performance.now() - s
+      drawStats.timed++
+    }
+    raf = requestAnimationFrame(loop)
+    return () => cancelAnimationFrame(raf)
+  }, [fps, advance])
+  return null
+}
 
 function Updater({ interactive }: { interactive: boolean }) {
   const view = useView()
@@ -39,6 +65,7 @@ function Updater({ interactive }: { interactive: boolean }) {
     const h = view.host
     if (!h) return
     view.camera = state.camera
+    if (interactive) drawStats.frames++
     h.frame(dt)
     const reduce = view.reduceMotion
     uniforms.uTime.value += dt * (reduce ? 0.5 : 1)
@@ -195,6 +222,7 @@ export function Scene({ env, interactive, pose, viewState }: { env: EnvId; inter
     view.dustCount = settings.graphics.dust
     view.reduceMotion = settings.access.reduceMotion
     view.reduceFlashing = settings.access.reduceFlashing
+    uniforms.uReflect.value = settings.graphics.reflections ? 1 : 0
   }, [env, settings])
   const g = settings.graphics
   const composer = useRef<any>(null)
@@ -203,7 +231,7 @@ export function Scene({ env, interactive, pose, viewState }: { env: EnvId; inter
       dpr={[g.resolution * 0.75, g.resolution]}
       gl={{ antialias: g.quality !== 'low', powerPreference: 'high-performance', alpha: false, stencil: false }}
       camera={{ fov: 52, near: 0.1, far: 2000, position: [0, 15, 60] }}
-      frameloop="always"
+      frameloop="never"
       onCreated={({ gl }) => {
         gl.setClearColor(0x050506)
         gl.toneMapping = THREE.NoToneMapping
@@ -211,6 +239,7 @@ export function Scene({ env, interactive, pose, viewState }: { env: EnvId; inter
       style={{ position: 'absolute', inset: 0 }}
     >
       <ViewContext.Provider value={view}>
+      <FrameLimiter fps={g.fpsCap} />
       <Updater interactive={interactive} />
       <CameraSetup pose={pose} radius={e.radius} />
       {!interactive && <MenuCamera />}

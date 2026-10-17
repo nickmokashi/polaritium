@@ -132,7 +132,7 @@ export function nucleate(w: WorldState, env: EnvParams, at: Vec3, anchor: SimNod
   const g = gradient(w.field.radiance, w.field, at)
   const dir = snap(c, vlen(g) > 1e-4 ? vnorm(g) : randUnit(w))
   const start = anchor ? { x: at.x + dir.x * 1.2, y: at.y + dir.y * 1.2, z: at.z + dir.z * 1.2 } : at
-  c.segs.push(makeSeg(start, dir, -1, 0, 0.55))
+  c.segs.push(makeSeg(start, dir, -1, 0, 0.42))
   w.crystals.push(c)
   emit(w, 'crystal', at, { a: c.id, text: habit })
   return c
@@ -220,7 +220,10 @@ export function crystalStep(w: WorldState, env: EnvParams, dt: number, byId: Map
       if (!grow || !s.growing) continue
       const R = sample(f.radiance, f, tip)
       const still = clamp(1 - vib / env.stillnessLimit, 0, 1)
-      const rate = env.crystalGrowth * (R / (R + 0.5)) * still * 2.0
+      // Each generation of growth is weaker than the last, so a crystal reaches a natural size
+      // instead of racing toward the light that feeds it.
+      const vigour = 1 - s.depth / (CRYSTAL_MAX_DEPTH + 2)
+      const rate = env.crystalGrowth * (R / (R + 1)) * still * 1.8 * vigour
       if (rate <= 0.001) continue
       const want = rate * dt3 * 0.6
       const got = withdraw(f.radiance, f, tip, want)
@@ -240,12 +243,12 @@ export function crystalStep(w: WorldState, env: EnvParams, dt: number, byId: Map
         const parent = { x: s.dx, y: s.dy, z: s.dz }
         const want2 = gl > 1e-4 ? vnorm({ x: parent.x * 0.8 + (g.x / gl) * 0.45, y: parent.y * 0.8 + (g.y / gl) * 0.45, z: parent.z * 0.8 + (g.z / gl) * 0.45 }) : parent
         const cont = snap(c, want2)
-        c.segs.push(makeSeg(tip, cont, i, s.depth + 1, s.thick * 0.86))
+        c.segs.push(makeSeg(tip, cont, i, s.depth + 1, s.thick * 0.84))
         s.children++
         budget--
-        const bp = { cubic: 0.32, hex: 0.3, spire: 0.12, shard: 0.22 }[c.habit] + Math.min(0.3, gl * 2)
+        const bp = ({ cubic: 0.32, hex: 0.3, spire: 0.12, shard: 0.22 }[c.habit] + Math.min(0.3, gl * 2)) * (1 - (s.depth / CRYSTAL_MAX_DEPTH) * 0.5)
         if (budget > 0 && c.segs.length < CRYSTAL_MAX_SEGS && nextRandom(w) < bp) {
-          c.segs.push(makeSeg(tip, branchDir(w, c, parent), i, s.depth + 1, s.thick * 0.72))
+          c.segs.push(makeSeg(tip, branchDir(w, c, parent), i, s.depth + 1, s.thick * 0.7))
           s.children++
           budget--
         }
