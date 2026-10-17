@@ -1,6 +1,7 @@
 // Installs the built Windows installer silently into a temporary folder, runs the installed
 // game's self-test (first run, then after a restart), then uninstalls it silently and checks
-// what remains. Nothing appears on screen: the installer runs with /S and the game hidden.
+// what remains. In between it runs the desktop-app tests against the installed copy. Nothing
+// appears on screen: the installer runs with /S and the game hidden.
 // Writes a report to release/installer-verification.json.
 import { execFileSync, spawnSync } from 'node:child_process'
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, writeFileSync } from 'node:fs'
@@ -46,6 +47,11 @@ for (const mode of ['first', 'reload']) {
   report[`selftest_${mode}`] = { ok: r.ok, picture: r.capture, packaged: r.packaged }
 }
 step('the game ran from the installation, not the development folder', report.selftest_first?.packaged === true)
+
+// 2b. The desktop-app tests, run against the installed copy (hidden windows).
+const pw = spawnSync(process.execPath, [join(root, 'node_modules', '@playwright', 'test', 'cli.js'), 'test', '-c', 'playwright.electron.config.ts', '--reporter=line'], { cwd: root, timeout: 900000, encoding: 'utf8', env: { ...process.env, POLARITIUM_EXE: exe } })
+const passed = /(\d+) passed/.exec(pw.stdout ?? '')
+step('desktop-app tests pass against the installed copy', pw.status === 0, passed ? `${passed[1]} passed` : (pw.stdout ?? '').slice(-600))
 
 // 3. Silent uninstall. Saves stay (documented): the data folder must survive.
 const un = spawnSync(join(installDir, 'Uninstall Polaritium.exe'), ['/S'], { timeout: 300000 })

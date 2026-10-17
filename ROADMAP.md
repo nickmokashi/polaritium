@@ -37,7 +37,8 @@ Every phase from the master packet (`docs/MASTER_PACKET.md`), its acceptance tes
 
 ## Phase 9 — Testing, security and performance
 - [x] Unit/integration (vitest), interface (Playwright, headless Edge), desktop app (Playwright Electron, hidden), installer (scripted).
-- [x] Performance measured on this machine (`TEST_RESULTS.md`).
+- [x] Performance measured on this machine (`TEST_RESULTS.md`): simulation 35–48× faster than real time in normal scenes, 3.4× with every limit reached; every graphics level holds its frame limit on Intel UHD graphics.
 
 ## Phase 10 — Windows release
-- [x] Installer, uninstaller, Start Menu and desktop shortcuts, icon, local saves, onboarding, user guide, technical notes, release notes, troubleshooting. Installed copy verified with its own hidden self-test.
+- [x] Installer, uninstaller, Start Menu and desktop shortcuts, icon, local saves, onboarding, user guide, technical notes, release notes, troubleshooting. Installed copy verified with its own hidden self-test and the six desktop tests (26/26, 17 Oct 2026). Release folder: `release/`.
+- [ ] Private GitHub repository: waits for Greygray's yes (account action). Public showcase: his call.
