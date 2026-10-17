@@ -11,7 +11,7 @@ v1.0, 17 Oct 2026** (pasted in the chat that started the project; its full text 
 
 - **The game must never spend money on its own.** Every Claude request goes through
   `src/core/budget/controller.ts` (admission) and `src/core/ai/service.ts` (the one sender).
-  No other file may import the Anthropic SDK except `src/main/ai/transport.ts`.
+  No other file may import the Anthropic SDK except `src/main/ai.ts` (a test enforces it).
 - **No real paid API calls during development** without Greygray's explicit yes for that call
   and a stated maximum cost. Mock transports are used for every test.
 - **Not Eonweld.** Check `DISTINCTION_FROM_EONWELD.md` before adding a system. Never read code

@@ -25,10 +25,10 @@ export function AiPanel({ onClose }: { onClose: () => void }) {
     void refresh()
   }, [])
 
-  const ask = async (title: string, feature: string, build: (summary: Record<string, number | string>) => unknown) => {
+  const ask = async (title: string, feature: string, build: (summary: Record<string, number | string>) => unknown, deep = false) => {
     setBusy(true)
     const summary = (await view.host?.req<Record<string, number | string>>('summary')) ?? {}
-    const r = await bridge.ai.run(feature, build(summary), { userInitiated: true })
+    const r = await bridge.ai.run(feature, build(summary), { userInitiated: true, deep })
     setBusy(false)
     if (r.ok) setOut({ title, text: r.text, note: r.cached ? 'Remembered from an identical earlier question: no cost.' : `Claude's interpretation. This request cost ${formatUsd(r.cost)}.` })
     else setOut({ title, text: r.fallback, note: `Local reading (no AI used). ${r.detail}` })
@@ -63,6 +63,11 @@ export function AiPanel({ onClose }: { onClose: () => void }) {
           <Btn disabled={busy} onClick={() => void ask('A reflection', 'reflect', (summary) => ({ summary }))}>
             A reflection
           </Btn>
+          {on && status?.allowDeep && (
+            <Btn disabled={busy} onClick={() => void ask('A deeper reading', 'interpret', (summary) => ({ summary, focus: null }), true)} title={`Uses ${status.deepModel}, which costs about twenty times more per request`}>
+              Deeper reading
+            </Btn>
+          )}
         </div>
         {busy && <span className="faint">Working…</span>}
         {out && (

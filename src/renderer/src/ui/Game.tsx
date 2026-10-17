@@ -153,6 +153,7 @@ export function Game() {
         useUI.getState().toast(entry.name, 'discovery', entry)
         const img = await snapshotThumb(480, 300)
         if (img) await bridge.atlas.update(entry.id, { image: img })
+        void enrich(entry)
       }
     }
     useUI.getState().set({ atlas: await bridge.atlas.list() })
@@ -170,6 +171,16 @@ export function Game() {
     }, 33)
     return () => clearInterval(t)
   }, [spec])
+
+  // Optional automatic enrichment: only if the player switched it on, from its own small
+  // allowance, never while paused, and the desktop process also checks the window is in use.
+  const enrich = async (entry: AtlasEntry) => {
+    if (useUI.getState().paused) return
+    const v = await bridge.ai.budget.view()
+    if (!v.aiEnabled || !v.autoEnrich) return
+    const r = await bridge.ai.run('name', { kind: 'discovery', facts: Object.fromEntries(entry.measurements.slice(0, 4)) }, { userInitiated: false, enrich: true })
+    if (r.ok) await bridge.atlas.update(entry.id, { ai: `Claude suggests names: ${r.text}` })
+  }
 
   // Autosave.
   useEffect(() => {

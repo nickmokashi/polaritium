@@ -378,6 +378,7 @@ export function BudgetDashboard() {
         </table>
         {!ledger.length && <span className="faint">No requests yet.</span>}
       </div>
+      <PriceList />
       {pending?.status === 'needs_confirmation' && (
         <Modal title="Confirm a higher allowance" onClose={() => setPending(null)} testid="budget-confirm">
           <div className="col" style={{ gap: 8, lineHeight: 1.5 }}>
@@ -417,5 +418,75 @@ function BudgetField({ value, onSet }: { value: number; onSet: (m: number) => vo
         Set
       </Btn>
     </span>
+  )
+}
+
+function PriceList() {
+  const [reg, setReg] = useState<Awaited<ReturnType<typeof bridge.ai.registry.get>> | null>(null)
+  const [edit, setEdit] = useState<string | null>(null)
+  const [msg, setMsg] = useState('')
+  useEffect(() => {
+    void bridge.ai.registry.get().then(setReg)
+  }, [])
+  if (!reg) return null
+  const models = Object.values(reg.bundled.models)
+  const per = (m: number) => `$${(m / 1e6).toFixed(m < 1e6 ? 3 : 2)}`
+  return (
+    <div className="col panel" style={{ padding: 14, gap: 8 }} data-testid="price-list">
+      <span className="caps">Prices used for every estimate</span>
+      <span className="muted">Per million tokens, checked against Anthropic’s pricing page on {reg.bundled.verifiedOn}. If Anthropic raises a price, you can raise it here; prices can never be set lower than these, so an estimate can only err on the safe side.</span>
+      <table>
+        <thead>
+          <tr className="faint">
+            <td>Model</td>
+            <td>Input</td>
+            <td>Cache write (1 h)</td>
+            <td>Cache read</td>
+            <td>Output</td>
+          </tr>
+        </thead>
+        <tbody>
+          {models.map((m) => {
+            const u = reg.user?.models[m.model]
+            const v = (k: 'inputPerMTok' | 'cacheWrite1hPerMTok' | 'cacheReadPerMTok' | 'outputPerMTok') => per(Math.max(m[k], u?.[k] ?? 0))
+            return (
+              <tr key={m.model}>
+                <td>{m.label}</td>
+                <td>{v('inputPerMTok')}</td>
+                <td>{v('cacheWrite1hPerMTok')}</td>
+                <td>{v('cacheReadPerMTok')}</td>
+                <td>{v('outputPerMTok')}</td>
+              </tr>
+            )
+          })}
+        </tbody>
+      </table>
+      <div className="row" style={{ gap: 6 }}>
+        <Btn small onClick={() => setEdit(JSON.stringify(reg.user ?? reg.bundled, null, 2))}>Update prices</Btn>
+        <Btn small kind="ghost" onClick={() => void bridge.app.openLink('pricing')}>Anthropic’s pricing page</Btn>
+        {reg.user && (
+          <Btn small kind="ghost" onClick={async () => { await bridge.ai.registry.set(null); setReg(await bridge.ai.registry.get()); setMsg('Back to the checked prices.') }}>
+            Use the checked prices
+          </Btn>
+        )}
+      </div>
+      {edit !== null && (
+        <div className="col">
+          <span className="faint">Prices are in microdollars per million tokens (1,000,000 = $1).</span>
+          <textarea value={edit} onChange={(e) => setEdit(e.target.value)} style={{ minHeight: 180, fontFamily: 'Consolas, monospace', fontSize: '0.85em' }} />
+          <div className="row">
+            <Btn small kind="primary" onClick={async () => {
+              try {
+                const r = await bridge.ai.registry.set(JSON.parse(edit))
+                setMsg(r.ok ? 'Saved.' : r.error ?? 'Not saved.')
+                if (r.ok) { setEdit(null); setReg(await bridge.ai.registry.get()) }
+              } catch { setMsg('That is not valid. Nothing was changed.') }
+            }}>Save prices</Btn>
+            <Btn small onClick={() => setEdit(null)}>Cancel</Btn>
+          </div>
+        </div>
+      )}
+      {msg && <span>{msg}</span>}
+    </div>
   )
 }

@@ -220,7 +220,7 @@ export function crystalStep(w: WorldState, env: EnvParams, dt: number, byId: Map
       if (!grow || !s.growing) continue
       const R = sample(f.radiance, f, tip)
       const still = clamp(1 - vib / env.stillnessLimit, 0, 1)
-      const rate = env.crystalGrowth * (R / (R + 2)) * still * 1.4
+      const rate = env.crystalGrowth * (R / (R + 0.5)) * still * 2.0
       if (rate <= 0.001) continue
       const want = rate * dt3 * 0.6
       const got = withdraw(f.radiance, f, tip, want)
