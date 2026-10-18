@@ -16,5 +16,6 @@ Version 1.0.0 is finished and verified (17 October 2026). Nothing is half-done.
 Never make a paid Claude request without Greygray's yes and a stated maximum cost. Never open
 a visible window on his screen.
 
-Working folder: `47 Polaritium`. Local git, branch `main`. Not on
-GitHub yet: creating the repository is an account action that waits for Greygray's yes.
+Working folder: `47 Polaritium`. Git branch `main`, pushed to the
+private repository `github.com/nickmokashi/polaritium` (created 17 Oct 2026 on Greygray's yes).
+Push after every commit worth keeping.
