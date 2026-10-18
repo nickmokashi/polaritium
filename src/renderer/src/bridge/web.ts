@@ -299,7 +299,20 @@ export function createWebBridge(): Bridge {
     },
     app: {
       async quit() {
+        // a browser will not close a tab it did not open; where the page carries a way back (the copy on
+        // thegreystrand.com marks its link back to the house with data-exit), Exit takes it instead
         window.close()
+        const back = document.querySelector<HTMLAnchorElement>('a[data-exit]')
+        if (back) setTimeout(() => { if (!window.closed) location.href = back.href }, 150)
+      },
+      // a browser tab can be closed at any moment and waits for nothing, so the open universe is saved whenever the
+      // page goes out of sight (another tab, a minimised window), and tried once more as the page is left (that last
+      // one can lose the race: the world has to come back from the simulation before it is written)
+      onClosing(cb) {
+        document.addEventListener('visibilitychange', () => {
+          if (document.visibilityState === 'hidden') void cb()
+        })
+        window.addEventListener('pagehide', () => void cb())
       },
       async setFullscreen(on) {
         try {
