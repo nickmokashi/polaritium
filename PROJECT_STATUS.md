@@ -15,7 +15,8 @@ tests against the installed copy. Details in `TEST_RESULTS.md`.
 2. **A first listen** to the sound.
 3. **The name.** `NAME_CHECK.md`: no exact conflict; Nintendo's *Polarium* is close.
 4. **The icon** (`build/icon-sheet.png`): first proposal, his call.
-5. **A public showcase**, if he wants one. The code repository is private.
+5. ~~A public showcase~~ Done 17 October 2026: `github.com/nickmokashi/polaritium-showcase`
+   (README and eight pictures). The code repository, `nickmokashi/polaritium`, is private.
 
 ## Not planned
 Code signing (needs a paid certificate), other operating systems.

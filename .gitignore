@@ -8,3 +8,4 @@ playwright-report/
 .scratch/
 release/**/*.exe
 release/**/*.blockmap
+showcase/

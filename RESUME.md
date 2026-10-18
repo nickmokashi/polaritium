@@ -19,3 +19,8 @@ a visible window on his screen.
 Working folder: `47 Polaritium`. Git branch `main`, pushed to the
 private repository `github.com/nickmokashi/polaritium` (created 17 Oct 2026 on Greygray's yes).
 Push after every commit worth keeping.
+
+Public showcase: `github.com/nickmokashi/polaritium-showcase`, from `showcase/` (its own git repo,
+ignored by this one). Every build that changes something visible updates it in the same turn:
+`npm run build`, `node scripts/capture-showcase.mjs` (headless Edge, about four minutes), look at
+every picture, update `showcase/README.md`, then commit and push both repositories.
