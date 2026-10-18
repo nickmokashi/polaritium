@@ -74,7 +74,7 @@ export function createWebBridge(): Bridge {
       lightModel: s.lightModel,
       deepModel: s.deepModel,
       allowDeep: s.allowDeep,
-      note: mock ? 'Test mode: replies come from a pretend Claude and cost nothing.' : 'AI features are available in the desktop app. Everything else works here.'
+      note: mock ? 'Test mode: replies come from a pretend Claude and cost nothing.' : 'The AI features need the desktop version, built from the open code on GitHub. Everything else works here.'
     }
   }
 
