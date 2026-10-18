@@ -5,7 +5,7 @@
   "description": "A living universe of opposing forces. Reach into the medium, connect, twist, pulse and tune, and see what emerges.",
   "private": true,
   "author": "Greygray",
-  "license": "UNLICENSED",
+  "license": "MIT",
   "main": "out/main/index.js",
   "scripts": {
     "dev": "electron-vite dev",

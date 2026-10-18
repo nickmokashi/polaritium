@@ -10,7 +10,7 @@ Intel UHD Graphics, 16 GB, Windows 11 Home. Every suite below ran and passed on 
 | Interface: first run and visual tour of six scenes | `npx playwright test e2e/smoke.spec.ts e2e/tour.spec.ts` | **7 passed** |
 | Interface: frame rate at each graphics level | `npx playwright test e2e/perf.spec.ts` | **8 passed** |
 | Desktop app (hidden Electron), development build | `npx playwright test -c playwright.electron.config.ts` | **6 passed** |
-| Installer: silent install, Start Menu entry, licence notices, installed self-test before and after a restart (21 checks), the 6 desktop tests against the installed copy, silent uninstall, saves kept | `node scripts/verify-installer.mjs` | **26 of 26 passed** (`release/installer-verification.json`) |
+| Installer: silent install, Start Menu entry, licence notices, installed self-test before and after a restart (21 checks), the 6 desktop tests against the installed copy, silent uninstall, saves kept | `node scripts/verify-installer.mjs` | **26 of 26 passed**, and again on 18 October after the installer's licence page changed to MIT (`release/installer-verification.json`) |
 
 ## What the suites prove
 

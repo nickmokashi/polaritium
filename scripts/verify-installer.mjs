@@ -69,7 +69,10 @@ step('saves are kept after uninstalling (as documented)', existsSync(join(dataDi
 report.finished = new Date().toISOString()
 report.ok = report.steps.every((s) => s.ok)
 mkdirSync(join(root, 'release'), { recursive: true })
-writeFileSync(join(root, 'release', 'installer-verification.json'), JSON.stringify(report, null, 2))
+// Paths are written relative to the project and to %TEMP%, so the record names no one's folders.
+const esc = (p) => JSON.stringify(p).slice(1, -1)
+const text = JSON.stringify(report, null, 2).split(esc(root)).join('.').split(esc(tmpdir())).join('%TEMP%')
+writeFileSync(join(root, 'release', 'installer-verification.json'), text)
 console.log(report.ok ? '\nINSTALLER VERIFIED' : '\nINSTALLER CHECK FAILED')
 void readdirSync
 process.exit(report.ok ? 0 : 1)

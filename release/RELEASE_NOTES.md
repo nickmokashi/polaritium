@@ -1,6 +1,7 @@
 # Polaritium 1.0.0
 
-17 October 2026. First release, for Windows 10 and 11 (64-bit).
+17 October 2026. First release, for Windows 10 and 11 (64-bit). Free and open source under the
+MIT License from 18 October 2026.
 
 ## What is in it
 

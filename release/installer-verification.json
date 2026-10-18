@@ -1,9 +1,9 @@
 {
   "version": "1.0.0",
-  "installer": "47 Polaritium\\dist\\Polaritium Setup 1.0.0.exe",
-  "installDir": "%TEMP%\\polaritium-install-hM3m8x",
-  "dataDir": "%TEMP%\\polaritium-data-jwODR3",
-  "started": "2026-10-17T22:43:18.905Z",
+  "installer": ".\\dist\\Polaritium Setup 1.0.0.exe",
+  "installDir": "%TEMP%\\polaritium-install-STD0qI",
+  "dataDir": "%TEMP%\\polaritium-data-bgzfhf",
+  "started": "2026-10-18T19:02:05.363Z",
   "steps": [
     {
       "name": "the installer runs silently and installs the game",
@@ -33,7 +33,7 @@
     {
       "name": "installed (first): the world evolves without input",
       "ok": true,
-      "detail": "tick 25 → 123"
+      "detail": "tick 44 → 141"
     },
     {
       "name": "installed (first): a strand can be drawn between light and dark",
@@ -42,7 +42,7 @@
     {
       "name": "installed (first): energy flows along it",
       "ok": true,
-      "detail": "flow 2.382"
+      "detail": "flow 2.310"
     },
     {
       "name": "installed (first): a pulse can be sent",
@@ -99,7 +99,7 @@
     {
       "name": "desktop-app tests pass against the installed copy",
       "ok": true,
-      "detail": "6 passed (40.4s)"
+      "detail": "6 passed"
     },
     {
       "name": "the uninstaller removes the game",
@@ -117,14 +117,14 @@
   ],
   "selftest_first": {
     "ok": true,
-    "picture": "%TEMP%\\polaritium-data-jwODR3\\selftest-first.png",
+    "picture": "%TEMP%\\polaritium-data-bgzfhf\\selftest-first.png",
     "packaged": true
   },
   "selftest_reload": {
     "ok": true,
-    "picture": "%TEMP%\\polaritium-data-jwODR3\\selftest-reload.png",
+    "picture": "%TEMP%\\polaritium-data-bgzfhf\\selftest-reload.png",
     "packaged": true
   },
-  "finished": "2026-10-17T22:44:36.721Z",
+  "finished": "2026-10-18T19:07:49.109Z",
   "ok": true
 }

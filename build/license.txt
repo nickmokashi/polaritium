@@ -1,12 +1,20 @@
 Polaritium 1.0.0
-Copyright (c) 2026 Greygray. All rights reserved.
+Copyright (c) 2026 Greygray
+
+Polaritium is free and open-source software under the MIT License, printed in full below. You may use, copy, change and share it, as long as this notice goes with it.
 
 Polaritium is a game. Its universe, its rules and everything that happens in it are fictional.
 
-You may install and play this copy of Polaritium on your own computers. You may not resell or redistribute it.
-
 Optional AI: Polaritium can use the Anthropic Claude API with a key you provide. Nothing is sent unless you switch AI on and ask for something. You are responsible for any charges on your Anthropic account; Polaritium's budget limits are a safeguard, not a guarantee of your Anthropic bill.
 
-Your saves, settings and spending record stay on this computer, in your application data folder. Uninstalling Polaritium leaves them there, so a reinstall picks up where you left off. Delete the folder %APPDATA%Polaritium to remove them.
+Your saves, settings and spending record stay on this computer, in your application data folder. Uninstalling Polaritium leaves them there, so a reinstall picks up where you left off. Delete the folder %APPDATA%\Polaritium to remove them.
 
 Polaritium includes open-source software (Electron, Chromium, Node.js, three.js, React, postprocessing, camera-controls, zustand, zod and the Anthropic SDK) under their own licences (MIT, BSD and Apache 2.0), and the fonts Cormorant Garamond and Inter under the SIL Open Font License 1.1. Full notices are in the licenses folder of the installation.
+
+MIT License
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.

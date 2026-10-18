@@ -40,5 +40,12 @@ Requires Node 22+ and Microsoft Edge (for the headless interface tests).
 Technical notes: `ARCHITECTURE.md`. Decisions and their reasons: `DECISIONS.md`. Test record:
 `TEST_RESULTS.md`. Current state: `PROJECT_STATUS.md`.
 
+## Open source
+
+Polaritium is free and open source under the MIT License (`LICENSE`): use it, change it, share it,
+keep the notice. The fonts it bundles are under the SIL Open Font License, and the other libraries'
+notices are in `build/licenses/THIRD_PARTY_NOTICES.txt`. Pictures of the game:
+https://github.com/nickmokashi/polaritium-showcase
+
 The master brief is `docs/MASTER_PACKET.md`. How Polaritium differs from Eonweld:
 `DISTINCTION_FROM_EONWELD.md`.
