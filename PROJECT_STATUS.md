@@ -16,7 +16,9 @@ tests against the installed copy. Details in `TEST_RESULTS.md`.
 3. **The name.** `NAME_CHECK.md`: no exact conflict; Nintendo's *Polarium* is close.
 4. **The icon** (`build/icon-sheet.png`): first proposal, his call.
 5. ~~A public showcase~~ Done 17 October 2026: `github.com/nickmokashi/polaritium-showcase`
-   (README and eight pictures). The code repository, `nickmokashi/polaritium`, is private.
+   (README and eight pictures). The code, `nickmokashi/polaritium`, is public and open source
+   under the MIT License since 18 October 2026 (his call: "I see no reason to keep this program
+   secret").
 
 ## Not planned
 Code signing (needs a paid certificate), other operating systems.

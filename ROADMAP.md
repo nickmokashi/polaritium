@@ -41,5 +41,5 @@ Every phase from the master packet (`docs/MASTER_PACKET.md`), its acceptance tes
 
 ## Phase 10 — Windows release
 - [x] Installer, uninstaller, Start Menu and desktop shortcuts, icon, local saves, onboarding, user guide, technical notes, release notes, troubleshooting. Installed copy verified with its own hidden self-test and the six desktop tests (26/26, 17 Oct 2026). Release folder: `release/`.
-- [x] Private GitHub repository `nickmokashi/polaritium`, created and pushed 17 Oct 2026 on Greygray's yes.
+- [x] GitHub repository `nickmokashi/polaritium`, created private 17 Oct 2026 and made public, open source under MIT, on 18 Oct 2026 (Greygray's call). Its history was rewritten first to drop a local folder path; the old history is backed up in `10 Archive/_polaritium-history-before-rewrite-2026-10-18.bundle`.
 - [x] Public showcase `nickmokashi/polaritium-showcase` (README, eight headless pictures), live 17 Oct 2026 on his yes. Recapture with `scripts/capture-showcase.mjs`.
